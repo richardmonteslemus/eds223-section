@@ -1,0 +1,39 @@
+---
+title: "Easter Island Tmap"
+format: html
+---
+
+```{r}
+library(here)
+library(tidyverse)
+library(sf)
+library(stars)
+library(tmap)
+```
+
+```{r}
+ei_points <- st_read(here("week1", "easter_island_tmap","data", "easter_island", "ei_points.gpkg")) %>% 
+  filter(type == "volcano")
+ei_elev <- read_stars(here("week1", "easter_island_tmap","data", "easter_island","ei_elev.tif"))
+ei_borders <- st_read(here("week1", "easter_island_tmap","data", "easter_island","ei_border.gpkg"))
+ei_roads <- st_read(here("week1", "easter_island_tmap","data", "easter_island", "ei_roads.gpkg"))
+```
+
+```{r}
+tm_shape(ei_borders) + 
+  tm_borders() +
+tm_layout(main.title = "Easter Island")
+```
+
+```{r}
+tmap_mode("view") +
+tm_shape(ei_borders) + 
+  tm_borders() +
+tm_shape(ei_elev) +
+  tm_raster(col.scale = tm_scale_continuous(values = terrain.colors(7)), col.legend = tm_legend(title = "Elevation")) +
+tm_shape(ei_points) + 
+  tm_dots(fill= "red") + 
+tm_shape(ei_roads) +
+  tm_lines() +
+tm_layout(main.title = "Easter Island Volcanos and Roads")
+```

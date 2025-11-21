@@ -1,0 +1,45 @@
+---
+title: "Santa Clara Generalizable Functions"
+author: "Richard Montes Lemus."
+format: html
+editor: visual
+---
+
+```{r}
+# Load necessary packages 
+library(terra)
+library(sf)
+library(tidyverse)
+library(here)
+library(tmap)
+```
+
+```{r}
+# Create function to compute NDVI
+ndvi_fun <- function(nir, red){
+  (nir - red) / (nir + red)
+}
+```
+
+```{r}
+# Load in first veg scene from June 12, 2018
+landsat_20180612 <- rast(here("data", "veg-data", "landsat_20180612.tif"))
+```
+
+```{r}
+# Update names of layers to match spectral bands
+names(landsat_20180612) <- c("blue", "green", "red", "NIR", "SWIR1", "SWIR2")
+```
+
+```{r}
+# Use lapp() function to pass NDVI function onto layers 
+ndvi_20180612 <- lapp(landsat_20180612[[c(4, 3)]], fun = ndvi_fun)
+```
+
+```{r}
+# Plot NDVI 
+tm_shape(ndvi_20180612) +
+  tm_raster(col.legend  = tm_legend("NDVI")) +
+  tm_layout(legend.outside.position = "right")
+```
+
